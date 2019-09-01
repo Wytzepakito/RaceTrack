@@ -52,9 +52,6 @@ public class MainFrame {
 
 		Field fieldPane = new Field(screenSize.height, screenSize.width, raceTrackElements);
 
-
-		
-
 		f.add(fieldPane);
 		f.pack();
 		f.setVisible(true);

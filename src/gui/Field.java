@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 import preGame.RaceTrackElements;
 import preGame.RoadEnd;
+import preGame.Street;
 import preGame.Turn;
 
 public class Field extends JPanel {
@@ -40,38 +41,23 @@ public class Field extends JPanel {
 		g2d = (Graphics2D) g;
 		drawStart();
 		drawCircle();
+		drawStreet();
 //		drawStraights();
 //		tempWrapper();
 		
 	}
 	private void drawCircle() {
 		for (Turn turn : raceTrackElements.getTurns()) {
-			drawTurn(turn.getSmall_Inner(), turn.getSmall_Outer());
+			drawTurn(turn.getInnerCoordinates(), turn.getOuterCoordinates());
 		}
 		
 	}
+	private void drawStreet() {
+		for (Street street: raceTrackElements.getStreets()) {
+			drawStraigth(street.getRoadStart(), street.getRoadEnd());
+		}
+	}
 	
-//	public void tempWrapper() {
-//		int polygonCount = 16 ;
-//		int x_start = (width/2)+50;
-//		int y_start = 100;
-//		int x_start2 = 150;
-//		List<List<Double>> super_list = calcEdgesPolygonCors(polygonCount, 50, x_start, y_start);
-//		drawTurn(super_list);
-//		int y_start2 = 120;
-//		List<List<Double>> super_list2 = calcEdgesPolygonCors(polygonCount, 30, x_start, y_start2);
-//		drawTurn(super_list2);
-//		
-//		x_start = 100;
-//		y_start = 100;
-//		List<List<Double>> super_list3 = calcEdgesPolygonCors(polygonCount, 30, x_start, y_start);
-//		drawTurn(super_list3);
-//		x_start = 100;
-//		y_start = 100;
-//		List<List<Double>> super_list4 = calcEdgesPolygonCors(polygonCount, 50, x_start, y_start);
-//		drawTurn(super_list4);
-//		
-//	}
 
 	
 	/*This takes a super coordinate list of [x,y] coordinates and draws that polygon 
@@ -91,10 +77,10 @@ public class Field extends JPanel {
 	 * 
 	 */
 	
-	public void drawStraigth(List<List<Integer>> coordinates) {
-		for (List<Integer> one_line :  coordinates) {
-			g2d.drawLine(one_line.get(0), one_line.get(2),one_line.get(3),one_line.get(4));
-		}
+	public void drawStraigth(RoadEnd roadStart, RoadEnd roadEnd) {
+		g2d.drawLine(roadStart.getX1(), roadStart.getY1(), roadEnd.getX1() , roadEnd.getY1());
+		g2d.drawLine(roadStart.getX2(), roadStart.getY2(), roadEnd.getX2(), roadEnd.getY2());
+		
 	}
 	
 	/*This takes a polygonCount, circle radius and x_ start and y_start and calculates the coordinates of every point in the polygon 

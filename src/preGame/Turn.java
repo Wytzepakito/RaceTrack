@@ -15,8 +15,9 @@ public class Turn {
 	private RoadEnd turnEnd;
 	private String compasOut;
 	private int degrees;
-	private List<List<Integer>> small_Inner;
-	private List<List<Integer>> small_Outer;
+	private List<List<Integer>> innerCoordinates;
+	private List<List<Integer>> outerCoordinates;
+	private boolean firstCoordinatesEnd;
 	
 	public Turn(RoadEnd turnStart, int innerCircleRadius, boolean clockwise, String compasIn, int degrees, int polygonCount) {
 		this.turnStart = turnStart;
@@ -31,16 +32,14 @@ public class Turn {
 		setTurnEnd();
 	}
 	public void calcCoordinates() {
-		List<List<Integer>> innerCoordinates =  coordinateCalculator( polygonCount, innerCircleRadius);
-		List<List<Integer>> outerCoordinates = coordinateCalculator( polygonCount, outerCircleRadius);
-		small_Inner = innerCoordinates;
-		small_Outer = outerCoordinates;
+		innerCoordinates =  coordinateCalculator( polygonCount, innerCircleRadius);
+		outerCoordinates = coordinateCalculator( polygonCount, outerCircleRadius);
 		if (clockwise) {
-			small_Inner = circleCutterClockWise(innerCoordinates);
-			small_Outer = circleCutterClockWise(outerCoordinates);
+			innerCoordinates = circleCutterClockWise(innerCoordinates);
+			outerCoordinates = circleCutterClockWise(outerCoordinates);
 		} else {
-//			List<List<Integer>> smallInnerCoordinates = circleCutterCounterClockWise(innerCoordinates);
-//			List<List<Integer>> smallOuterCoordinates = circleCutterCounterClockWise(outerCoordinates);
+			innerCoordinates = circleCutterCounterClockWise(innerCoordinates);
+			outerCoordinates = circleCutterCounterClockWise(outerCoordinates);
 		}
 
 	}
@@ -69,10 +68,10 @@ public class Turn {
 	public void findWestCircleCenter() {
 		
 		if (clockwise) {
-			y_CircleCenter = Math.max(turnStart.getY1(), turnStart.getY2()) + innerCircleRadius;
+			y_CircleCenter = Math.min(turnStart.getY1(), turnStart.getY2()) - innerCircleRadius;
 			x_CircleCenter = turnStart.getX1();
 		} else {
-			y_CircleCenter = Math.min(turnStart.getY1(), turnStart.getY2()) - innerCircleRadius;
+			y_CircleCenter = Math.max(turnStart.getY1(), turnStart.getY2()) + innerCircleRadius;
 			x_CircleCenter = turnStart.getX1();
 		}
 
@@ -90,28 +89,92 @@ public class Turn {
 	
 	public void findEastCircleCenter() {
 		if (clockwise) {
-			y_CircleCenter = Math.min(turnStart.getY1(), turnStart.getY2()) - innerCircleRadius;
+			y_CircleCenter = Math.max(turnStart.getY1(), turnStart.getY2()) + innerCircleRadius;
 			x_CircleCenter = turnStart.getX1();
 		} else {
-			y_CircleCenter = Math.max(turnStart.getY1(), turnStart.getY2()) + innerCircleRadius;
+			y_CircleCenter = Math.min(turnStart.getY1(), turnStart.getY2()) - innerCircleRadius;
 			x_CircleCenter = turnStart.getX1();
 		}
 	}
 
 	public List<List<Integer>> coordinateCalculator(int polygonCount, int circleRadius) {
-		double length_of_sides = circleRadius * Math.sin((2*Math.PI)/polygonCount);
-		double one_corner = ((Math.PI*(polygonCount -2))/polygonCount);
-		double angle = (2 * Math.PI)/ polygonCount; 
 		List<List<Integer>> coordinates = new ArrayList();
 		for (int i = 0; i < polygonCount; i++) {
 			ArrayList<Integer> temp_list = new ArrayList();
-			  Double x = x_CircleCenter + circleRadius * Math.cos(2 * Math.PI * i / polygonCount);
-			  Double y =  y_CircleCenter + circleRadius * Math.sin(2 * Math.PI * i / polygonCount);
-			  temp_list.add(x.intValue());
-			  temp_list.add(y.intValue());
-			  coordinates.add(temp_list);
-			}
+			Double x = x_CircleCenter + circleRadius * Math.cos(2 * Math.PI * i / polygonCount);
+			Double y = y_CircleCenter + circleRadius * Math.sin(2 * Math.PI * i / polygonCount);
+			temp_list.add(x.intValue());
+			temp_list.add(y.intValue());
+			coordinates.add(temp_list);
+		}
 		return coordinates;
+	}
+	private List<List<Integer>> circleCutterCounterClockWise(List<List<Integer>> coordinates){
+	int ninetyDeg = polygonCount/4;
+	List<List<Integer>> small_coordinates =  null;
+	List<List<Integer>> small_coordinates2 =  null;
+
+	if (compasIn=="East") {
+		if (degrees==90) {
+			 small_coordinates =  coordinates.subList(0, 5);
+			 firstCoordinatesEnd = true;
+			 compasOut= "North";
+		}else if (degrees==180) {
+			small_coordinates =  coordinates.subList(12, 15);
+			small_coordinates.addAll(coordinates.subList(0, 5));
+			firstCoordinatesEnd = true;
+			compasOut= "West";
+		}else if (degrees==270) {
+				small_coordinates = coordinates.subList(8, 15);
+				small_coordinates.addAll(coordinates.subList(0, 5));
+				firstCoordinatesEnd = true;
+				compasOut= "South";
+			}
+		} else if (compasIn == "North") {
+			if (degrees == 90) {
+				small_coordinates = coordinates.subList(12, 15);
+				small_coordinates.add(coordinates.get(0));
+				compasOut= "West";
+			} else if (degrees == 180) {
+				small_coordinates = coordinates.subList(8, 15);
+				small_coordinates.add(coordinates.get(0));
+				compasOut= "South";
+			} else if (degrees == 270) {
+				small_coordinates = coordinates.subList(4, 15);
+				small_coordinates.add(coordinates.get(0));
+				compasOut= "East";
+			}
+		} else if (compasIn=="South") {
+			if (degrees == 90) {
+				small_coordinates = coordinates.subList(4, 9);
+				compasOut= "East";
+				firstCoordinatesEnd = true;
+			} else if (degrees == 180) {
+				small_coordinates = coordinates.subList(0, 9);
+				compasOut= "North";
+				firstCoordinatesEnd = true;
+			} else if (degrees == 270) {
+				small_coordinates = coordinates.subList(12, 15);
+				small_coordinates.addAll(coordinates.subList(0, 9));
+				compasOut= "West";
+				firstCoordinatesEnd = true;
+			}
+		} else if (compasIn=="West") {
+			if (degrees == 90) {
+				small_coordinates = coordinates.subList(8, 13);
+				firstCoordinatesEnd = true;
+				compasOut= "South";
+			} else if (degrees == 180) {
+				small_coordinates = coordinates.subList(4, 13);
+				firstCoordinatesEnd = true;
+				compasOut= "East";
+			} else if (degrees == 270) {
+				small_coordinates2 = coordinates.subList(0, 13);
+				firstCoordinatesEnd = true;
+				compasOut= "North";
+			}
+		}
+	return small_coordinates;
 	}
 	
 	private List<List<Integer>> circleCutterClockWise(List<List<Integer>> coordinates){
@@ -121,44 +184,97 @@ public class Turn {
 //	small_coordinates.addAll(small_coordinates2);
 	if (compasIn=="East") {
 		if (degrees==90) {
-			 small_coordinates =  coordinates.subList(0, 2);
-			 small_coordinates2 =  coordinates.subList(2, 5);
+			 small_coordinates =  coordinates.subList(12, 16);
+			 small_coordinates.addAll(coordinates.subList(0, 1));
+			 compasOut= "South";
 		}else if (degrees==180) {
 			small_coordinates =  coordinates.subList(12, 16);
-			small_coordinates2 =  coordinates.subList(0, 5);
+			small_coordinates.addAll(coordinates.subList(0, 5));
+			compasOut= "West";
 		}else if (degrees==270) {
-				small_coordinates = coordinates.subList(8, 16);
-				small_coordinates2 = coordinates.subList(0, 5);
+				small_coordinates = coordinates.subList(12, 16);
+				small_coordinates.addAll(coordinates.subList(0, 9));
+				compasOut= "North";
 			}
 		} else if (compasIn == "North") {
 			if (degrees == 90) {
-				small_coordinates = coordinates.subList(0, 2);
-				small_coordinates2 = coordinates.subList(2, 5);
+				small_coordinates = coordinates.subList(8, 13);
+				compasOut= "East";
 			} else if (degrees == 180) {
-				small_coordinates = coordinates.subList(12, 16);
-				small_coordinates2 = coordinates.subList(0, 5);
+				small_coordinates = coordinates.subList(8, 16);
+				small_coordinates.addAll(coordinates.subList(0, 1));
+				compasOut= "South";
 			} else if (degrees == 270) {
 				small_coordinates = coordinates.subList(8, 16);
-				small_coordinates2 = coordinates.subList(0, 5);
+				small_coordinates.addAll(coordinates.subList(0, 5));
+				compasOut= "West";
+			}
+		} else if (compasIn=="South") {
+			if (degrees == 90) {
+				small_coordinates = coordinates.subList(0, 5);
+				compasOut= "West";
+			} else if (degrees == 180) {
+				small_coordinates = coordinates.subList(0, 9);
+				compasOut= "North";
+			} else if (degrees == 270) {
+				small_coordinates = coordinates.subList(0, 13);
+				compasOut= "East";
+			}
+		} else if (compasIn=="West") {
+			if (degrees == 90) {
+				small_coordinates = coordinates.subList(4, 9);
+				compasOut= "North";
+			} else if (degrees == 180) {
+				small_coordinates = coordinates.subList(4, 13);
+				compasOut= "East";
+			} else if (degrees == 270) {
+				small_coordinates = coordinates.subList(4, 16);
+				small_coordinates.addAll(coordinates.subList(0, 1));
+				compasOut= "South";
 			}
 		}
-	small_coordinates.addAll(small_coordinates2);
 	return small_coordinates;
+	}
+	public boolean checkOutOfBounds(int width, int height) {
+		boolean outOfBounds = false;
+		if (checkOuterOutOfBounds(width, height)|| checkInnerOutOfBounds(width, height)) {
+			outOfBounds = true;
+		}
+		return outOfBounds;
+	}
+	
+	private boolean checkOuterOutOfBounds(int width, int height){
+		boolean outOfBounds = false;
+		for(List<Integer> coordinate : outerCoordinates) {
+			if (coordinate.get(0)> width || coordinate.get(0)< 0|| coordinate.get(1)> height || coordinate.get(1) < 0) {
+				outOfBounds = true;
+			}
+		}
+		return outOfBounds;
+	}
+	
+	private boolean checkInnerOutOfBounds(int width, int height){
+		boolean outOfBounds = false;
+		for(List<Integer> coordinate : innerCoordinates) {
+			if (coordinate.get(0)> width || coordinate.get(0)< 0|| coordinate.get(1)> height || coordinate.get(1) < 0) {
+				outOfBounds = true;
+			}
+		}
+		return outOfBounds;
 	}
 	
 	public RoadEnd getTurnEnd() {
 		return turnEnd;
 	}
 	private void setTurnEnd() {
-		int size = small_Inner.size();
-		turnEnd = new RoadEnd(small_Inner.get(size-1).get(0), small_Inner.get(size-1).get(0), small_Outer.get(size-1).get(0), small_Outer.get(size-1).get(1));
+		if (firstCoordinatesEnd) {
+		turnEnd = new RoadEnd(innerCoordinates.get(0).get(0), innerCoordinates.get(0).get(1), outerCoordinates.get(0).get(0), outerCoordinates.get(0).get(1));
+		} else {
+			int size = innerCoordinates.size();
+			turnEnd = new RoadEnd(innerCoordinates.get(size-1).get(0), innerCoordinates.get(size-1).get(1), outerCoordinates.get(size-1).get(0), outerCoordinates.get(size-1).get(1));
+		}
 	}
-	public List<List<Integer>> getSmall_Inner() {
-		return small_Inner;
-	}
-	public List<List<Integer>> getSmall_Outer() {
-		return small_Outer;
-	}
+
 	@Override
 	public String toString() {
 		String string = "Circle radius in,out: " + innerCircleRadius +"," + outerCircleRadius+" Circle x,y: " + x_CircleCenter+","+y_CircleCenter;
@@ -166,5 +282,18 @@ public class Turn {
 		return string;
 		
 	}
+	public String getCompasOut() {
+		return compasOut;
+	}
+	public List<List<Integer>> getInnerCoordinates() {
+		return innerCoordinates;
+	}
+	public List<List<Integer>> getOuterCoordinates() {
+		return outerCoordinates;
+	}
+	public String getCompasIn() {
+		return compasIn;
+	}
+	
 	
 }

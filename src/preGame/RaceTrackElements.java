@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class RaceTrackElements {
 	private ArrayList<Turn> turns;
-	private ArrayList<Straigth> straights;
+	private ArrayList<Street> streets;
 	public RaceTrackElements() {
 		turns = new ArrayList<Turn>();
-		straights = new ArrayList<Straigth>();
+		streets = new ArrayList<Street>();
 	}
 
 	
@@ -20,14 +20,14 @@ public class RaceTrackElements {
 	public void addTurn(Turn turn) {
 		this.turns.add(turn);
 	}
-	public ArrayList<Straigth> getStraights() {
-		return straights;
+	public ArrayList<Street> getStreets() {
+		return streets;
 	}
-	public void setStraights(ArrayList<Straigth> straights) {
-		this.straights = straights;
+	public void setStreets(ArrayList<Street> streets) {
+		this.streets = streets;
 	}
-	public void addStraight(Straigth straight) {
-		this.straights.add(straight);
+	public void addStreet(Street street) {
+		this.streets.add(street);
 	}
 	
 	
