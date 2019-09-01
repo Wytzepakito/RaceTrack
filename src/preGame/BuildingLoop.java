@@ -23,7 +23,11 @@ public class BuildingLoop {
 	}
 
 	private void  makeTrack() {
-		RoadEnd trackEnd = fieldpane.getTrackStart();
+		// add the start as a street
+		
+		Street start = new Street(fieldpane.getTrackEnd(), "East", 100);
+		raceTrackElements.addStreet(start);
+		
 		Street randStreet = null;
 		Turn randTurn = null;
 		boolean chanceTurnChosen = false;
@@ -33,36 +37,34 @@ public class BuildingLoop {
 		while (count != 8 ) {
 			boolean itemCorrect = false;
 			int triedSometimes = 0;
-			System.out.println("count loop");
 			while(itemCorrect==false && triedSometimes != 10) {
-				System.out.println("item correct loop");
 				boolean chanceTurn = getRndCoinFlip();
 				boolean chanceClockWise = getRndCoinFlipTurns();
 				randStreet = makeStreet(roadEnd, compasOut);
-				System.out.println(randStreet);
 				randTurn = makeTurn(roadEnd, compasOut, chanceClockWise);
 				if (chanceTurn) {
 
 					if((checkTurnCrossTrack(randTurn)==false) && (randTurn.checkOutOfBounds(fieldpane.getWidth(), fieldpane.getHeight())==false)){
 						itemCorrect = true;
 						chanceTurnChosen = true;
-						System.out.println("turn should be turned correct");
 					}
 				} else  {
-					System.out.println("chance not turn");
 					if((checkStreetCrossTrack(randStreet)== false) && (randStreet.checkOutOfBounds(fieldpane.getWidth(), fieldpane.getHeight()) == false)) {
 						itemCorrect = true;
 						chanceTurnChosen = false;
-						System.out.println("street should be turned correct");
 					}
 				}
 				triedSometimes +=1;
 			}
 			if (chanceTurnChosen) {
+				System.out.println("A TURN");
+				System.out.println(randTurn.toString());
+				System.out.println(randTurn.getRoadEndsString());
 				raceTrackElements.addTurn(randTurn);
 				roadEnd = randTurn.getTurnEnd();
 				compasOut = randTurn.getCompasOut();
 			} else  {
+				System.out.println("A ROAD");
 				System.out.println(randStreet.toString());
 				raceTrackElements.addStreet(randStreet);
 				roadEnd = randStreet.getRoadEnd();
@@ -118,7 +120,6 @@ public class BuildingLoop {
 						if (doLinesCross(oldLine1, newLine1) | doLinesCross(oldLine1, newLine2)
 								| doLinesCross(oldLine2, newLine1) | doLinesCross(oldLine2, newLine2)) {
 							theyCross = true;
-							System.out.println("Turn cross turn");
 						}
 					}
 				}
@@ -133,7 +134,6 @@ public class BuildingLoop {
 					if (doLinesCross(oldLine1, newLine1) | doLinesCross(oldLine1, newLine2)
 							| doLinesCross(oldLine2, newLine1) | doLinesCross(oldLine2, newLine2)) {
 						theyCross = true;
-						System.out.println("turn cross street");
 					}
 
 				}
@@ -142,7 +142,6 @@ public class BuildingLoop {
 			noneCrossed = true;
 
 		}
-		System.out.println("THEEEEY DID NOT CROSS");
 		return theyCross;
 
 	}
@@ -169,7 +168,8 @@ public class BuildingLoop {
 					&& x0 < Math.max(line1.get(0).get(0), line1.get(1).get(0))) {
 				result = true;
 			}
-		} else if (!(line1.get(1).get(0).equals(line1.get(0).get(0))) && (!line2.get(0).get(0).equals(line2.get(1).get(0)))) {
+		} 
+	else if (!(line1.get(1).get(0).equals(line1.get(0).get(0))) && (!line2.get(0).get(0).equals(line2.get(1).get(0)))) {
 			// none of the lines is vertical so we need to make equations for each
 			// make equation of y= ax +b
 			double a1 = (line1.get(1).get(1) - line1.get(0).get(1)) / (line1.get(1).get(0) - line1.get(0).get(0));
@@ -221,7 +221,6 @@ public class BuildingLoop {
 		// radii is the plural of radius :D
 		int[] radii = {10,20,30,40,50,60,70,80,90,100,200,300};
 		Street street = new Street(roadEnd, compasOut, getRnd(radii));
-		System.out.println(street.toString());
 		return street;
 	}
 	

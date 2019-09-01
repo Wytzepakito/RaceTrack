@@ -29,6 +29,8 @@ public class Turn {
 		this.compasIn = compasIn;
 		compasHandler();
 		calcCoordinates();
+		System.out.println(innerCoordinates);
+		System.out.println(outerCoordinates);
 		setTurnEnd();
 	}
 	public void calcCoordinates() {
@@ -112,7 +114,7 @@ public class Turn {
 	private List<List<Integer>> circleCutterCounterClockWise(List<List<Integer>> coordinates){
 	int ninetyDeg = polygonCount/4;
 	List<List<Integer>> small_coordinates =  null;
-	List<List<Integer>> small_coordinates2 =  null;
+
 
 	if (compasIn=="East") {
 		if (degrees==90) {
@@ -132,14 +134,17 @@ public class Turn {
 			}
 		} else if (compasIn == "North") {
 			if (degrees == 90) {
+				firstCoordinatesEnd = true;
 				small_coordinates = coordinates.subList(12, 15);
 				small_coordinates.add(coordinates.get(0));
 				compasOut= "West";
 			} else if (degrees == 180) {
+				firstCoordinatesEnd = true;
 				small_coordinates = coordinates.subList(8, 15);
 				small_coordinates.add(coordinates.get(0));
 				compasOut= "South";
 			} else if (degrees == 270) {
+				firstCoordinatesEnd = true;
 				small_coordinates = coordinates.subList(4, 15);
 				small_coordinates.add(coordinates.get(0));
 				compasOut= "East";
@@ -169,7 +174,7 @@ public class Turn {
 				firstCoordinatesEnd = true;
 				compasOut= "East";
 			} else if (degrees == 270) {
-				small_coordinates2 = coordinates.subList(0, 13);
+				small_coordinates = coordinates.subList(0, 13);
 				firstCoordinatesEnd = true;
 				compasOut= "North";
 			}
@@ -277,10 +282,12 @@ public class Turn {
 
 	@Override
 	public String toString() {
-		String string = "Circle radius in,out: " + innerCircleRadius +"," + outerCircleRadius+" Circle x,y: " + x_CircleCenter+","+y_CircleCenter;
-		
+		String string = "compas out: "+ compasOut + " degrees:" + degrees + " clockwise:" + clockwise; 
+		return string;	
+	}
+	public String getRoadEndsString() {
+		String string = "RoadStart:"+ turnStart.toString() + "RoadEnd:" + turnStart.toString();
 		return string;
-		
 	}
 	public String getCompasOut() {
 		return compasOut;

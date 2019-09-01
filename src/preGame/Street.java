@@ -29,25 +29,33 @@ public class Street {
 
 	}
 	public List<List<List<Integer>>> getCoordinates(){
-		List<List<List<Integer>>> all_coordinates = new ArrayList<>();
-		int[][] line_One = {{roadStart.getX1(), roadStart.getY1()},{roadEnd.getX1(), roadEnd.getY1()}};
-		int[][] line_Two = {{roadStart.getX2(), roadStart.getY2()},{roadEnd.getX2(), roadEnd.getY2()}};
-		all_coordinates.add( convertArrayToList(line_One));
-		all_coordinates.add(convertArrayToList(line_Two));
-		return all_coordinates;
+		List<List<List<Integer>>> all_Coordinates = new ArrayList<>();
+		List<List<Integer>> line_One = new ArrayList<>();
+		List<Integer> line_One_Pnt1 =  new ArrayList<>();
+		line_One_Pnt1.add(roadStart.getX1());
+		line_One_Pnt1.add(roadStart.getY1());
+		List<Integer> line_One_Pnt2 = new ArrayList<>();
+		line_One_Pnt2.add(roadEnd.getX1());
+		line_One_Pnt2.add(roadEnd.getY2());
+		line_One.add(line_One_Pnt1);
+		line_One.add(line_One_Pnt2);
+		
+		List<List<Integer>> line_Two = new ArrayList<>();
+		List<Integer> line_Two_Pnt1 = new ArrayList<>();
+		line_Two_Pnt1.add(roadStart.getX2());
+		line_Two_Pnt1.add(roadStart.getY2());
+		List<Integer> line_Two_Pnt2 = new ArrayList<>();
+		line_Two_Pnt2.add(roadEnd.getX2());
+		line_Two_Pnt2.add(roadEnd.getY2());
+		line_Two.add(line_Two_Pnt1);
+		line_Two.add(line_Two_Pnt2);
+		
+		all_Coordinates.add(line_One);
+		all_Coordinates.add(line_Two);
+		
+		return all_Coordinates;
 	} 
-	private List<List<Integer>> convertArrayToList(int[][] array) {
-		List<List<Integer>> List = new ArrayList<>();
-		for(int[] miniArray: array) {
-			ArrayList<Integer> miniList = new ArrayList<Integer>();
-			for (int i : miniArray) {
-				Integer integer = i;
-				miniList.add(integer);
-			}
-			List.add( miniList);
-		}
-		return List;
-	}
+	
 	public boolean checkOutOfBounds(int width, int height) {
 		boolean outOfBounds= false;
 		if(checkOutOfBoundsX(width) || checkOutOfBoundsY(height)) {
