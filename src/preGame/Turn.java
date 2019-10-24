@@ -1,6 +1,7 @@
 package preGame;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Turn {
@@ -15,8 +16,8 @@ public class Turn {
 	private RoadEnd turnEnd;
 	private String compasOut;
 	private int degrees;
-	private List<List<Integer>> innerCoordinates;
-	private List<List<Integer>> outerCoordinates;
+	private int[][] innerCoordinates;
+	private int[][] outerCoordinates;
 	private boolean firstCoordinatesEnd;
 	
 	public Turn(RoadEnd turnStart, int innerCircleRadius, boolean clockwise, String compasIn, int degrees, int polygonCount) {
@@ -29,8 +30,6 @@ public class Turn {
 		this.compasIn = compasIn;
 		compasHandler();
 		calcCoordinates();
-		System.out.println(innerCoordinates);
-		System.out.println(outerCoordinates);
 		setTurnEnd();
 	}
 	public void calcCoordinates() {
@@ -99,146 +98,164 @@ public class Turn {
 		}
 	}
 
-	public List<List<Integer>> coordinateCalculator(int polygonCount, int circleRadius) {
-		List<List<Integer>> coordinates = new ArrayList();
+	public int[][] coordinateCalculator(int polygonCount, int circleRadius) {
+		List<int[]> coordinates = new ArrayList();
 		for (int i = 0; i < polygonCount; i++) {
-			ArrayList<Integer> temp_list = new ArrayList();
 			Double x = x_CircleCenter + circleRadius * Math.cos(2 * Math.PI * i / polygonCount);
 			Double y = y_CircleCenter + circleRadius * Math.sin(2 * Math.PI * i / polygonCount);
-			temp_list.add(x.intValue());
-			temp_list.add(y.intValue());
+			int[] temp_list = new int[] {x.intValue(), y.intValue()};
 			coordinates.add(temp_list);
 		}
-		return coordinates;
+		int[][] coordinatesInt = new int[coordinates.size()][2];
+		for(int i = 0; i < coordinates.size(); i++) {
+			coordinatesInt[i] = coordinates.get(i);
+		}
+		return coordinatesInt;
 	}
-	private List<List<Integer>> circleCutterCounterClockWise(List<List<Integer>> coordinates){
+	private int[][] circleCutterCounterClockWise(int[][] coordinates){
 	int ninetyDeg = polygonCount/4;
-	List<List<Integer>> small_coordinates =  null;
-
-
+	int[][] small_coordinates =  null;
+	int[][] small_coordinates2 = null;
 	if (compasIn=="East") {
 		if (degrees==90) {
-			 small_coordinates =  coordinates.subList(0, 5);
+			 small_coordinates = Arrays.copyOfRange(coordinates, 0, 3);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 3, 5);
 			 firstCoordinatesEnd = true;
 			 compasOut= "North";
 		}else if (degrees==180) {
-			small_coordinates =  coordinates.subList(12, 15);
-			small_coordinates.addAll(coordinates.subList(0, 5));
+			 small_coordinates = Arrays.copyOfRange(coordinates, 12, 15);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 5);
 			firstCoordinatesEnd = true;
 			compasOut= "West";
 		}else if (degrees==270) {
-				small_coordinates = coordinates.subList(8, 15);
-				small_coordinates.addAll(coordinates.subList(0, 5));
+			 small_coordinates = Arrays.copyOfRange(coordinates, 8, 15);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 5);
 				firstCoordinatesEnd = true;
 				compasOut= "South";
 			}
 		} else if (compasIn == "North") {
 			if (degrees == 90) {
 				firstCoordinatesEnd = true;
-				small_coordinates = coordinates.subList(12, 15);
-				small_coordinates.add(coordinates.get(0));
+				 small_coordinates = Arrays.copyOfRange(coordinates, 12, 15);
+				 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 2);
 				compasOut= "West";
 			} else if (degrees == 180) {
 				firstCoordinatesEnd = true;
-				small_coordinates = coordinates.subList(8, 15);
-				small_coordinates.add(coordinates.get(0));
+				 small_coordinates = Arrays.copyOfRange(coordinates, 8, 15);
+				 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 2);
 				compasOut= "South";
 			} else if (degrees == 270) {
 				firstCoordinatesEnd = true;
-				small_coordinates = coordinates.subList(4, 15);
-				small_coordinates.add(coordinates.get(0));
+				 small_coordinates = Arrays.copyOfRange(coordinates, 4, 15);
+				 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 2);
 				compasOut= "East";
 			}
 		} else if (compasIn=="South") {
 			if (degrees == 90) {
-				small_coordinates = coordinates.subList(4, 9);
+				 small_coordinates = Arrays.copyOfRange(coordinates, 4, 6);
+				 small_coordinates2 = Arrays.copyOfRange(coordinates, 6, 9);
 				compasOut= "East";
 				firstCoordinatesEnd = true;
 			} else if (degrees == 180) {
-				small_coordinates = coordinates.subList(0, 9);
+				 small_coordinates = Arrays.copyOfRange(coordinates, 0, 3);
+				 small_coordinates2 = Arrays.copyOfRange(coordinates, 3, 9);
 				compasOut= "North";
 				firstCoordinatesEnd = true;
 			} else if (degrees == 270) {
-				small_coordinates = coordinates.subList(12, 15);
-				small_coordinates.addAll(coordinates.subList(0, 9));
+				 small_coordinates = Arrays.copyOfRange(coordinates, 12, 15);
+				 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 9);
 				compasOut= "West";
 				firstCoordinatesEnd = true;
 			}
 		} else if (compasIn=="West") {
 			if (degrees == 90) {
-				small_coordinates = coordinates.subList(8, 13);
+				 small_coordinates = Arrays.copyOfRange(coordinates, 8, 10);
+				 small_coordinates2 = Arrays.copyOfRange(coordinates, 10, 13);
 				firstCoordinatesEnd = true;
 				compasOut= "South";
 			} else if (degrees == 180) {
-				small_coordinates = coordinates.subList(4, 13);
+				small_coordinates = Arrays.copyOfRange(coordinates, 4, 8);
+				small_coordinates2 = Arrays.copyOfRange(coordinates, 8, 13);
 				firstCoordinatesEnd = true;
 				compasOut= "East";
 			} else if (degrees == 270) {
-				small_coordinates = coordinates.subList(0, 13);
+				small_coordinates = Arrays.copyOfRange(coordinates, 0, 5);
+				small_coordinates2 = Arrays.copyOfRange(coordinates, 5, 13);
 				firstCoordinatesEnd = true;
 				compasOut= "North";
 			}
 		}
-	return small_coordinates;
+	int[][] super_small_coordinates = mergeArrays(small_coordinates,small_coordinates2);
+
+	return super_small_coordinates;
 	}
 	
-	private List<List<Integer>> circleCutterClockWise(List<List<Integer>> coordinates){
+	private int[][] circleCutterClockWise(int[][] coordinates){
 	int ninetyDeg = polygonCount/4;
-	List<List<Integer>> small_coordinates =  null;
-	List<List<Integer>> small_coordinates2 =  null;
-//	small_coordinates.addAll(small_coordinates2);
+	int[][] small_coordinates =  null;
+	int[][] small_coordinates2 = null;
 	if (compasIn=="East") {
 		if (degrees==90) {
-			 small_coordinates =  coordinates.subList(12, 16);
-			 small_coordinates.addAll(coordinates.subList(0, 1));
+			 small_coordinates = Arrays.copyOfRange(coordinates, 12, 16);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 2);
 			 compasOut= "South";
 		}else if (degrees==180) {
-			small_coordinates =  coordinates.subList(12, 16);
-			small_coordinates.addAll(coordinates.subList(0, 5));
+
+			small_coordinates = Arrays.copyOfRange(coordinates, 12, 16);
+			small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 5);
 			compasOut= "West";
 		}else if (degrees==270) {
-				small_coordinates = coordinates.subList(12, 16);
-				small_coordinates.addAll(coordinates.subList(0, 9));
-				compasOut= "North";
+			small_coordinates = Arrays.copyOfRange(coordinates, 12, 16);
+			small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 9);
+			compasOut= "North";
 			}
 		} else if (compasIn == "North") {
 			if (degrees == 90) {
-				small_coordinates = coordinates.subList(8, 13);
+				small_coordinates = Arrays.copyOfRange(coordinates, 8, 10);
+				small_coordinates2 = Arrays.copyOfRange(coordinates, 10, 13);
 				compasOut= "East";
 			} else if (degrees == 180) {
-				small_coordinates = coordinates.subList(8, 16);
-				small_coordinates.addAll(coordinates.subList(0, 1));
+				small_coordinates = Arrays.copyOfRange(coordinates, 8, 16);
+				small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 2);
 				compasOut= "South";
 			} else if (degrees == 270) {
-				small_coordinates = coordinates.subList(8, 16);
-				small_coordinates.addAll(coordinates.subList(0, 5));
+				small_coordinates = Arrays.copyOfRange(coordinates, 8, 16);
+				small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 5);
 				compasOut= "West";
 			}
 		} else if (compasIn=="South") {
 			if (degrees == 90) {
-				small_coordinates = coordinates.subList(0, 5);
+			 small_coordinates = Arrays.copyOfRange(coordinates, 0, 3);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 3, 5);
 				compasOut= "West";
 			} else if (degrees == 180) {
-				small_coordinates = coordinates.subList(0, 9);
+			 small_coordinates = Arrays.copyOfRange(coordinates, 0, 5);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 5, 9);
 				compasOut= "North";
 			} else if (degrees == 270) {
-				small_coordinates = coordinates.subList(0, 13);
+			 small_coordinates = Arrays.copyOfRange(coordinates, 0, 9);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 9, 13);
 				compasOut= "East";
 			}
 		} else if (compasIn=="West") {
 			if (degrees == 90) {
-				small_coordinates = coordinates.subList(4, 9);
+			 small_coordinates = Arrays.copyOfRange(coordinates, 4, 7);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 7, 9);
 				compasOut= "North";
 			} else if (degrees == 180) {
-				small_coordinates = coordinates.subList(4, 13);
+			 small_coordinates = Arrays.copyOfRange(coordinates, 4, 8);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 8, 13);
 				compasOut= "East";
 			} else if (degrees == 270) {
-				small_coordinates = coordinates.subList(4, 16);
-				small_coordinates.addAll(coordinates.subList(0, 1));
+			 small_coordinates = Arrays.copyOfRange(coordinates, 4, 16);
+			 small_coordinates2 = Arrays.copyOfRange(coordinates, 0, 1);
 				compasOut= "South";
 			}
 		}
-	return small_coordinates;
+	
+	
+	int[][] super_small_coordinates = mergeArrays(small_coordinates,small_coordinates2);
+	return super_small_coordinates;
 	}
 	public boolean checkOutOfBounds(int width, int height) {
 		boolean outOfBounds = false;
@@ -250,8 +267,8 @@ public class Turn {
 	
 	private boolean checkOuterOutOfBounds(int width, int height){
 		boolean outOfBounds = false;
-		for(List<Integer> coordinate : outerCoordinates) {
-			if (coordinate.get(0)> width || coordinate.get(0)< 0|| coordinate.get(1)> height || coordinate.get(1) < 0) {
+		for(int[] coordinate : outerCoordinates) {
+			if (coordinate[0] > width || coordinate[0] < 0|| coordinate[1]> height || coordinate[1] < 0) {
 				outOfBounds = true;
 			}
 		}
@@ -260,8 +277,8 @@ public class Turn {
 	
 	private boolean checkInnerOutOfBounds(int width, int height){
 		boolean outOfBounds = false;
-		for(List<Integer> coordinate : innerCoordinates) {
-			if (coordinate.get(0)> width || coordinate.get(0)< 0|| coordinate.get(1)> height || coordinate.get(1) < 0) {
+		for(int[] coordinate : innerCoordinates) {
+			if (coordinate[0] > width || coordinate[0] < 0|| coordinate[1] > height || coordinate[1] < 0) {
 				outOfBounds = true;
 			}
 		}
@@ -273,11 +290,25 @@ public class Turn {
 	}
 	private void setTurnEnd() {
 		if (firstCoordinatesEnd) {
-		turnEnd = new RoadEnd(innerCoordinates.get(0).get(0), innerCoordinates.get(0).get(1), outerCoordinates.get(0).get(0), outerCoordinates.get(0).get(1));
+		turnEnd = new RoadEnd(innerCoordinates[0][0], innerCoordinates[0][1], outerCoordinates[0][0], outerCoordinates[0][1]);
 		} else {
-			int size = innerCoordinates.size();
-			turnEnd = new RoadEnd(innerCoordinates.get(size-1).get(0), innerCoordinates.get(size-1).get(1), outerCoordinates.get(size-1).get(0), outerCoordinates.get(size-1).get(1));
+			int size = innerCoordinates.length;
+			turnEnd = new RoadEnd(innerCoordinates[size-1][0], innerCoordinates[size-1][1], outerCoordinates[size-1][0], outerCoordinates[size-1][1]);
 		}
+	}
+	
+	private int[][] mergeArrays(int[][] array1, int[][] array2) {
+		int[][] mergedArray = new int[array1.length+array2.length][];
+		int index = array1.length;
+
+		for (int i = 0; i < array1.length; i++) {
+			mergedArray[i] = array1[i];
+		}
+		for (int i = 0; i < array2.length; i++) {
+			mergedArray[i + index] = array2[i];    
+		}
+		return mergedArray;
+		
 	}
 
 	@Override
@@ -286,16 +317,16 @@ public class Turn {
 		return string;	
 	}
 	public String getRoadEndsString() {
-		String string = "RoadStart:"+ turnStart.toString() + "RoadEnd:" + turnStart.toString();
+		String string = "RoadStart:"+ turnStart.toString() + "RoadEnd:" + turnEnd.toString();
 		return string;
 	}
 	public String getCompasOut() {
 		return compasOut;
 	}
-	public List<List<Integer>> getInnerCoordinates() {
+	public int[][] getInnerCoordinates() {
 		return innerCoordinates;
 	}
-	public List<List<Integer>> getOuterCoordinates() {
+	public int[][] getOuterCoordinates() {
 		return outerCoordinates;
 	}
 	public String getCompasIn() {

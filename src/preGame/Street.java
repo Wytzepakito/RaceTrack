@@ -28,30 +28,19 @@ public class Street {
 		}
 
 	}
-	public List<List<List<Integer>>> getCoordinates(){
-		List<List<List<Integer>>> all_Coordinates = new ArrayList<>();
-		List<List<Integer>> line_One = new ArrayList<>();
-		List<Integer> line_One_Pnt1 =  new ArrayList<>();
-		line_One_Pnt1.add(roadStart.getX1());
-		line_One_Pnt1.add(roadStart.getY1());
-		List<Integer> line_One_Pnt2 = new ArrayList<>();
-		line_One_Pnt2.add(roadEnd.getX1());
-		line_One_Pnt2.add(roadEnd.getY2());
-		line_One.add(line_One_Pnt1);
-		line_One.add(line_One_Pnt2);
+	public int[][][] getCoordinates(){
 		
-		List<List<Integer>> line_Two = new ArrayList<>();
-		List<Integer> line_Two_Pnt1 = new ArrayList<>();
-		line_Two_Pnt1.add(roadStart.getX2());
-		line_Two_Pnt1.add(roadStart.getY2());
-		List<Integer> line_Two_Pnt2 = new ArrayList<>();
-		line_Two_Pnt2.add(roadEnd.getX2());
-		line_Two_Pnt2.add(roadEnd.getY2());
-		line_Two.add(line_Two_Pnt1);
-		line_Two.add(line_Two_Pnt2);
+
 		
-		all_Coordinates.add(line_One);
-		all_Coordinates.add(line_Two);
+		int[] line_One_Pnt1 = new int[] {roadStart.getX1(), roadStart.getY1()};
+
+		int[] line_One_Pnt2 = new int[] {roadEnd.getX1(), roadEnd.getY1()};
+		int[][] line_One =  new int[][] {line_One_Pnt1, line_One_Pnt2};
+
+		int[] line_Two_Pnt1 = new int[] {roadStart.getX2(), roadStart.getY2()};
+		int[] line_Two_Pnt2 = new int[] {roadEnd.getX2(), roadEnd.getY2()};
+		int[][] line_Two =  new int[][] {line_Two_Pnt1, line_Two_Pnt2};
+		int[][][] all_Coordinates = new int[][][] {line_One, line_Two};
 		
 		return all_Coordinates;
 	} 

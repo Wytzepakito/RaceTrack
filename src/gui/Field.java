@@ -63,14 +63,14 @@ public class Field extends JPanel {
 	/*This takes a super coordinate list of [x,y] coordinates and draws that polygon 
 	 * 
 	 */
-	public void drawTurn(List<List<Integer>> coordinates, List<List<Integer>> other_coordinates) {
-		for (int i = 0; i < coordinates.size() - 1; i++) {
-			g2d.drawLine(coordinates.get(i).get(0), coordinates.get(i).get(1), coordinates.get(i + 1).get(0),
-					coordinates.get(i + 1).get(1));
+	public void drawTurn(int[][] coordinates, int[][] other_coordinates) {
+		for (int i = 0; i < coordinates.length - 1; i++) {
+			g2d.drawLine(coordinates[i][0], coordinates[i][1], coordinates[i+1][0],
+					coordinates[i+1][1]);
 		}
-		for (int i = 0; i < other_coordinates.size() - 1; i++) {
-			g2d.drawLine(other_coordinates.get(i).get(0), other_coordinates.get(i).get(1),
-					other_coordinates.get(i + 1).get(0), other_coordinates.get(i + 1).get(1));
+		for (int i = 0; i < other_coordinates.length - 1; i++) {
+			g2d.drawLine(other_coordinates[i][0], other_coordinates[i][1],
+					other_coordinates[i+1][0], other_coordinates[i+1][1]);
 		}
 	}
 	/*
